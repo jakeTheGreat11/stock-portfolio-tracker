@@ -1,0 +1,27 @@
+ill add stock app and start on the portfoilio api calls
+
+get api/portfolio -> gets all the data like this: 
+{
+  "total_market_value": 15320.50,
+  "total_cost_basis": 13200.00,
+  "total_pnl": 2120.50,
+  "total_pnl_pct": 0.1606,
+  "holdings": [
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc",
+      "quantity": 10,
+      "avg_buy_price": 150,
+      "current_price": 182,
+      "market_value": 1820,
+      "pnl": 320,
+      "pnl_pct": 0.2133,
+      "weight": 0.1188
+    }
+  ]
+}
+
+
+then for the post its when you add a new stock and amount to the holding for a certain user
+
+and patch and delete to update a certain stock 
