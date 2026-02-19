@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ProtectedTestView
+from . import views
 
 urlpatterns = [
-    path("protected/", ProtectedTestView.as_view()),
+    path("holdings/", views.get_holdings_list, name="get-holdings-list"),
 ]
