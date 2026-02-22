@@ -2,10 +2,10 @@ from rest_framework import serializers
 from .models import Stock, Holding
 
 
-class StockSetializer(serializers.ModelSerializer):
+class StockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stock
-        fields = ["id", "sticker", "name"]
+        fields = ["id", "ticker", "name"]
 
 
 class HoldingSerializer(serializers.ModelSerializer):
@@ -15,3 +15,11 @@ class HoldingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Holding
         fields = ["id", "ticker", "name", "quantity", "avg_buy_price"]
+
+
+class HoldingAddSerializer(serializers.Serializer):
+    symbol = serializers.CharField(max_length=20)
+    name = serializers.CharField(
+        max_length=200, required=False, allow_blank=True)
+    quantity = serializers.DecimalField(max_digits=12, decimal_places=4)
+    buy_price = serializers.DecimalField(max_digits=12, decimal_places=2)
