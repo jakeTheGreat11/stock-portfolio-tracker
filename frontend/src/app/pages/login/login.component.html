@@ -1,0 +1,29 @@
+<h2>Login</h2>
+<div>
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <div>
+      <label>Username</label>
+      <input
+        [(ngModel)]="username"
+        name="username"
+        placeholder="Enter username"
+        required
+      />
+    </div>
+    <div>
+      <label>Password</label>
+      <input
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Enter password"
+        type="password"
+        required
+      />
+    </div>
+    <button type="submit" [disabled]="loading || loginForm.invalid">
+      {{ loading ? "Logging in..." : " Login" }}
+    </button>
+    <p *ngIf="error" style="color: red">{{ error }}</p>
+  </form>
+  <p>dont have an account, <a routerLink="/register">register here</a></p>
+</div>

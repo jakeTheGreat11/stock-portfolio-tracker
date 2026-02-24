@@ -1,0 +1,21 @@
+<h2>Search Stocks</h2>
+
+<input
+  type="text"
+  placeholder="Search by symbol or company"
+  [formControl]="query"
+/>
+
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{ error }}</div>
+<div *ngIf="resultCount !== null && resultCount <= 0 && !loading">
+  no results found
+</div>
+
+<ul>
+  <li *ngFor="let stock of results">
+    <a [routerLink]="['/stocks', stock.symbol]">
+      <strong>{{ stock.symbol }}</strong> - {{ stock.description }}
+    </a>
+  </li>
+</ul>

@@ -92,7 +92,6 @@ def stock_details(request, symbol: str):
         )
     profile = profile_data[0]
 
-
     quote_data = get_quote_finnhub(symbol)
 
     normalized = {
@@ -110,7 +109,6 @@ def stock_details(request, symbol: str):
         "shareOutstanding": profile.get("sharesOutstanding"),
         "quote": {
             "price": quote_data["price"],
-            "volume": quote_data["volume"]
         },
         "quote_error": quote_data["error"],
         "quote_source": quote_data["source"]
@@ -138,10 +136,9 @@ def add_holding(request):
     )
 
 
-
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
-def delete_holding(request, symbol:str):
+def delete_holding(request, symbol: str):
     symbol = symbol.upper().strip()
 
     stock = Stock.objects.filter(ticker=symbol).first()
@@ -151,23 +148,24 @@ def delete_holding(request, symbol:str):
             {"detail": f"Stock with symbol {symbol} not found."},
             status=status.HTTP_404_NOT_FOUND
         )
-    
+
     holding = Holding.objects.filter(user=request.user, stock=stock).first()
     if holding is None:
         return Response(
             {"detail": f"Holding with symbol {symbol} not found for user."},
             status=status.HTTP_404_NOT_FOUND
         )
-    
+
     holding.delete()
     return Response(
         {"detail": f"Holding with symbol {symbol} has been deleted."},
         status=status.HTTP_204_NO_CONTENT
     )
 
+
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
-def update_holding(request, symbol:str):
+def update_holding(request, symbol: str):
     symbol = symbol.upper().strip()
 
     update_serializer = HoldingUpdateSerializer(data=request.data)
@@ -178,12 +176,13 @@ def update_holding(request, symbol:str):
 
     if stock is None:
         return Response(
-            {"detail":f"Stock with symbol {symbol} not found."},
+            {"detail": f"Stock with symbol {symbol} not found."},
             status=status.HTTP_404_NOT_FOUND
         )
-    
+
     with transaction.atomic():
-        holding = Holding.objects.filter(user=request.user, stock=stock).first()
+        holding = Holding.objects.filter(
+            user=request.user, stock=stock).first()
         if holding is None:
             return Response(
                 {"detail": f"Holding with symbol {symbol} not found for user."},
@@ -193,17 +192,19 @@ def update_holding(request, symbol:str):
             holding.quantity = data["quantity"]
         if "avg_buy_price" in data:
             holding.avg_buy_price = data["avg_buy_price"]
-        
+
         holding.save()
     return Response(
         HoldingSerializer(holding).data,
         status=status.HTTP_200_OK
     )
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def holdings_summary(request):
-    holdings = Holding.objects.filter(user=request.user).select_related("stock")
+    holdings = Holding.objects.filter(
+        user=request.user).select_related("stock")
 
     total_cost_basis = Decimal("0")
     total_market_value = Decimal("0")
@@ -215,7 +216,7 @@ def holdings_summary(request):
         symbol = holding.stock.ticker
         name = holding.stock.name
 
-        # current holding 
+        # current holding
         quantity = holding.quantity
         average_buy_price = holding.avg_buy_price
         cost_basis = quantity * average_buy_price
@@ -223,14 +224,13 @@ def holdings_summary(request):
         quote = get_quote_finnhub(symbol)
         price = quote["price"]
 
-
         market_value = None
         unrealized_pl = None
         unrealized_pl_percent = None
 
         # we put this outside the price check because even if we can not calculate the market value and pl without a price, we still want to include the holding in the summary with the cost basis and quantity in case of an api issue
         total_cost_basis += cost_basis
-        
+
         if price is not None:
             current_price = Decimal(str(price))
             market_value = quantity * current_price
@@ -241,7 +241,8 @@ def holdings_summary(request):
             total_unrealized_pl += unrealized_pl
 
             if cost_basis > 0:
-                unrealized_pl_percent = (unrealized_pl / cost_basis) * Decimal("100")
+                unrealized_pl_percent = (
+                    unrealized_pl / cost_basis) * Decimal("100")
 
         rows.append({
             "symbol": symbol,
@@ -251,7 +252,6 @@ def holdings_summary(request):
 
             "quote": {
                 "price": price,
-                "volume": quote["volume"],
                 "source": quote["source"],
                 "error": quote["error"],
             },
@@ -264,7 +264,8 @@ def holdings_summary(request):
 
     total_unrealized_pl_percent = None
     if total_cost_basis > 0:
-        total_unrealized_pl_percent = (total_unrealized_pl / total_cost_basis) * Decimal("100")
+        total_unrealized_pl_percent = (
+            total_unrealized_pl / total_cost_basis) * Decimal("100")
 
     return Response({
         "total_cost_basis": str(total_cost_basis),

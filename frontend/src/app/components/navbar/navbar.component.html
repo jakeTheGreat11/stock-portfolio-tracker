@@ -1,0 +1,8 @@
+<header class="nav">
+  <nav class="left">
+    <a routerLink="/holdings">Portfolio</a> |
+    <a routerLink="/stocks/search">stocks</a>
+  </nav>
+
+  <button *ngIf="isAuthed()" (click)="logout()">Logout</button>
+</header>

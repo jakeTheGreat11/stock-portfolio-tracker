@@ -1,0 +1,54 @@
+<h2>Register</h2>
+
+<div>
+  <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
+    <div>
+      <label>Username</label>
+      <input
+        [(ngModel)]="username"
+        name="username"
+        placeholder="username"
+        type="text"
+        required
+      />
+    </div>
+    <div>
+      <label>Email</label>
+      <input [(ngModel)]="email" name="email" placeholder="email" required />
+    </div>
+    <div>
+      <label>Password</label>
+      <input
+        [(ngModel)]="password"
+        name="password"
+        placeholder="password"
+        type="password"
+        minlength="8"
+        required
+      />
+      <div
+        *ngIf="
+          registerForm.submitted && registerForm.controls['password']?.errors
+        "
+      >
+        <small
+          style="color: red"
+          *ngIf="registerForm.controls['password']?.errors?.['required']"
+        >
+          Password is required.
+        </small>
+        <small
+          style="color: red"
+          *ngIf="registerForm.controls['password']?.errors?.['minlength']"
+        >
+          Password must be at least 8 characters.
+        </small>
+      </div>
+    </div>
+    <button type="submit" [disabled]="loading || registerForm.invalid">
+      {{ loading ? "Registering..." : " Register" }}
+    </button>
+    <p *ngIf="error" style="color: red">{{ error }}</p>
+    <p>have an account already , <a routerLink="/login">login here</a></p>
+  </form>
+</div>

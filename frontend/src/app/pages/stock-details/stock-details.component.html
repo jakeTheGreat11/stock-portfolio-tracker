@@ -1,0 +1,44 @@
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{ error }}</div>
+
+<div *ngIf="!loading && stockDetails as d">
+  <h2>{{ d.name || d.symbol }} ({{ d.symbol }})</h2>
+
+  <div *ngIf="d.logo">
+    <img
+      [src]="d.logo"
+      alt="logo"
+      style="width: 60px; height: 60px; border-radius: 8px"
+    />
+  </div>
+
+  <p *ngIf="d.exchange"><strong>Exchange:</strong> {{ d.exchange }}</p>
+  <p *ngIf="d.currency"><strong>Currency:</strong> {{ d.currency }}</p>
+
+  <hr />
+
+  <h3>Quote</h3>
+  <p><strong>Price:</strong> {{ d.quote.price ?? "-" }}</p>
+
+  <p *ngIf="d.quote_source"><strong>Source:</strong> {{ d.quote_source }}</p>
+  <p *ngIf="d.quote_error" style="color: #b00020">
+    <strong>Quote error:</strong> {{ d.quote_error }}
+  </p>
+
+  <hr />
+
+  <!-- super simple add -->
+  <label>
+    Quantity:
+    <input type="number" [(ngModel)]="quantity" min="1" />
+  </label>
+
+  <button
+    (click)="addHolding()"
+    [disabled]="!d.quote.price || quantity <= 0 || adding"
+  >
+    {{ adding ? "Adding..." : "Add to holdings" }}
+  </button>
+
+  <p *ngIf="addMessage">{{ addMessage }}</p>
+</div>

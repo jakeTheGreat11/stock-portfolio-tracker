@@ -1,0 +1,87 @@
+<h2>Portfolio</h2>
+
+<button (click)="load()" [disabled]="loading">
+  {{ loading ? "Refreshing..." : "Refresh" }}
+</button>
+
+<p *ngIf="loading">Loading...</p>
+<p *ngIf="error" style="color: red">{{ error }}</p>
+
+<!-- Summary Totals -->
+<div *ngIf="summary && !loading" style="margin-top: 16px">
+  <h3>Summary</h3>
+  <ul>
+    <li>
+      Total Cost Basis:
+      <strong>{{ money(summary.total_cost_basis) }}</strong>
+    </li>
+    <li>
+      Total Market Value:
+      <strong>{{ money(summary.total_market_value) }}</strong>
+    </li>
+    <li>
+      Total Unrealized P/L:
+      <strong>{{ money(summary.total_unrealized_pl) }}</strong>
+    </li>
+    <li *ngIf="summary.total_unrealized_pl_percent != null">
+      Total P/L %:
+      <strong>{{ pct(summary.total_unrealized_pl_percent) }}</strong>
+    </li>
+  </ul>
+</div>
+
+<!-- Holdings Table -->
+<div *ngIf="rows.length && !loading" style="margin-top: 16px">
+  <h3>Holdings</h3>
+
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Name</th>
+        <th>Qty</th>
+        <th>Avg Buy</th>
+        <th>Price</th>
+        <th>Cost Basis</th>
+        <th>Market Value</th>
+        <th>Unrealized P/L</th>
+        <th>P/L %</th>
+        <th>Quote</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let r of rows">
+        <td>{{ r.symbol }}</td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.quantity }}</td>
+
+        <td>{{ money(r.avg_buy_price) }}</td>
+
+        <!-- quote.price might be null -->
+        <td>{{ r.quote.price != null ? money(r.quote.price) : "-" }}</td>
+
+        <td>{{ money(r.cost_basis) }}</td>
+        <td>{{ r.market_value != null ? money(r.market_value) : "-" }}</td>
+
+        <td>{{ r.unrealized_pl != null ? money(r.unrealized_pl) : "-" }}</td>
+        <td>
+          {{
+            r.unrealized_pl_percent != null ? pct(r.unrealized_pl_percent) : "-"
+          }}
+        </td>
+
+        <td>
+          <span *ngIf="r.quote?.error" style="color: red">error</span>
+          <span *ngIf="!r.quote?.error">ok</span>
+          <span *ngIf="r.quote?.source"> ({{ r.quote.source }})</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Empty State -->
+<p *ngIf="!rows.length && !loading && !error" style="margin-top: 16px">
+  No holdings yet. Search a stock and add your first holding.
+</p>

@@ -7,6 +7,7 @@ from django.core.cache import cache
 
 FINNHUB_QUOTE_TTL_SECONDS = 1000
 
+
 def add_or_merge_holdings(user, symbol, name, quantity, buy_price):
 
     with transaction.atomic():
@@ -50,7 +51,7 @@ def get_quote_finnhub(symbol: str):
 
     cached = cache.get(cache_key)
     if cached is not None:
-        print("FETCHING FROM FINNHUB:", symbol)
+        print("FETCHING FROM CACHE:", symbol)
         return cached
 
     url = "https://finnhub.io/api/v1/quote"
@@ -66,33 +67,32 @@ def get_quote_finnhub(symbol: str):
 
         # Rate limit / blocked
         if quote_request.status_code == 429:
-            result = {"price": None, "volume": None, "error": "Rate limited (429)", "source": "finnhub"}
+            result = {"price": None,
+                      "error": "Rate limited (429)", "source": "finnhub"}
             cache.set(cache_key, result, 15)
             return result
-        
+
         quote_request.raise_for_status()
         data = quote_request.json()
     except requests.RequestException as e:
-        result = {"price": None, "volume": None, "error": str(e), "source": "finnhub"}
+        result = {"price": None,
+                  "error": str(e), "source": "finnhub"}
         cache.set(cache_key, result, 15)
         return result
-    
+
     price = data.get("c")
-    volume = data.get("v")
 
     # If the symbol is not found or has no data, because finhub can not have the data sometimes
     if price in (None, 0):
-        result = { "price": None, "volume": None, "error": "No price returned"}
+        result = {"price": None, "error": "No price returned"}
         cache.set(cache_key, result, FINNHUB_QUOTE_TTL_SECONDS)
         return result
-    
+
     result = {
         "price": float(price),
-        "volume": float(volume) if volume is not None else None,
         "error": None,
         "source": "finnhub",
     }
 
     cache.set(cache_key, result, FINNHUB_QUOTE_TTL_SECONDS)
     return result
- 
