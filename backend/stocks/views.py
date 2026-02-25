@@ -70,6 +70,7 @@ def stock_search(request):
 def stock_details(request, symbol: str):
     symbol = symbol.strip().upper()
 
+    print(symbol)
     profile_url = "https://financialmodelingprep.com/stable/profile"
     params = {"symbol": symbol, "apikey": settings.FMP_API_KEY}
 
@@ -92,8 +93,6 @@ def stock_details(request, symbol: str):
         )
     profile = profile_data[0]
 
-    quote_data = get_quote_finnhub(symbol)
-
     normalized = {
         "symbol": symbol,
         "name": profile.get("companyName") or profile.get("name"),
@@ -107,11 +106,8 @@ def stock_details(request, symbol: str):
         "ipo": profile.get("ipoDate"),
         "marketCapitalization": profile.get("mktCap"),
         "shareOutstanding": profile.get("sharesOutstanding"),
-        "quote": {
-            "price": quote_data["price"],
-        },
-        "quote_error": quote_data["error"],
-        "quote_source": quote_data["source"]
+        "price": profile.get("price"),
+
     }
 
     return Response(data=normalized, status=status.HTTP_200_OK)
@@ -159,7 +155,7 @@ def delete_holding(request, symbol: str):
     holding.delete()
     return Response(
         {"detail": f"Holding with symbol {symbol} has been deleted."},
-        status=status.HTTP_204_NO_CONTENT
+        status=status.HTTP_200_OK
     )
 
 

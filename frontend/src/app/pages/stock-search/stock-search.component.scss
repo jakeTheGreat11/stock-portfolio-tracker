@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 16px;
+}
+
+h2 {
+  margin: 0 0 12px;
+}
+
+input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  outline: none;
+  margin-bottom: 12px;
+}
+
+input[type="text"]:focus {
+  border-color: #111;
+}
+
+div {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+li a {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  background: #fff;
+  text-decoration: none;
+  color: #111;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+li a:hover {
+  border-color: #d5d5d5;
+  transform: translateY(-1px);
+}
+
+strong {
+  font-weight: 800;
+}

@@ -42,4 +42,16 @@ export class HoldingsService {
   addHolding(body: { symbol: string; quantity: number; buy_price: number }) {
     return this.http.post('/api/holdings/add/', body);
   }
+
+  deleteHolding(symbol: string) {
+    const santizedSymbol = symbol.trim().toUpperCase();
+    return this.http.delete(`/api/holdings/delete/${santizedSymbol}/`);
+  }
+
+  updateHolding(symbol: string, quantity: number) {
+    const santizedSymbol = symbol.trim().toUpperCase();
+    return this.http.patch(`/api/holdings/update/${santizedSymbol}/`, {
+      quantity,
+    });
+  }
 }

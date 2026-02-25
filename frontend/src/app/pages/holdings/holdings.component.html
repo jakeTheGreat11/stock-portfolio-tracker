@@ -1,4 +1,4 @@
-<h2>Portfolio</h2>
+<!-- <h2>Portfolio</h2>
 
 <button (click)="load()" [disabled]="loading">
   {{ loading ? "Refreshing..." : "Refresh" }}
@@ -7,8 +7,7 @@
 <p *ngIf="loading">Loading...</p>
 <p *ngIf="error" style="color: red">{{ error }}</p>
 
-<!-- Summary Totals -->
-<div *ngIf="summary && !loading" style="margin-top: 16px">
+<div class="section" *ngIf="summary && !loading" style="margin-top: 16px">
   <h3>Summary</h3>
   <ul>
     <li>
@@ -30,11 +29,10 @@
   </ul>
 </div>
 
-<!-- Holdings Table -->
-<div *ngIf="rows.length && !loading" style="margin-top: 16px">
+<div class="section" *ngIf="rows.length && !loading" style="margin-top: 16px">
   <h3>Holdings</h3>
 
-  <table border="1" cellpadding="8" cellspacing="0">
+  <table>
     <thead>
       <tr>
         <th>Symbol</th>
@@ -46,7 +44,7 @@
         <th>Market Value</th>
         <th>Unrealized P/L</th>
         <th>P/L %</th>
-        <th>Quote</th>
+        <th>Actions</th>
       </tr>
     </thead>
 
@@ -58,7 +56,6 @@
 
         <td>{{ money(r.avg_buy_price) }}</td>
 
-        <!-- quote.price might be null -->
         <td>{{ r.quote.price != null ? money(r.quote.price) : "-" }}</td>
 
         <td>{{ money(r.cost_basis) }}</td>
@@ -72,16 +69,167 @@
         </td>
 
         <td>
-          <span *ngIf="r.quote?.error" style="color: red">error</span>
-          <span *ngIf="!r.quote?.error">ok</span>
-          <span *ngIf="r.quote?.source"> ({{ r.quote.source }})</span>
+          <button
+            (click)="reduceOrDelete(r)"
+            [disabled]="loading || deletingSymbol === r.symbol"
+          >
+            {{ deletingSymbol === r.symbol ? "Working..." : "Delete / Reduce" }}
+          </button>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<!-- Empty State -->
-<p *ngIf="!rows.length && !loading && !error" style="margin-top: 16px">
+<p
+  class="section"
+  *ngIf="!rows.length && !loading && !error"
+  style="margin-top: 16px"
+>
   No holdings yet. Search a stock and add your first holding.
-</p>
+</p> -->
+
+<div class="holdings-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="title">
+      <h2>Portfolio</h2>
+      <p class="subtitle">Track your totals and holdings in one place.</p>
+    </div>
+
+    <button class="btn primary" (click)="load()" [disabled]="loading">
+      <span *ngIf="!loading">Refresh</span>
+      <span *ngIf="loading">Refreshing…</span>
+    </button>
+  </header>
+
+  <!-- States -->
+  <div class="alert" *ngIf="error"><strong>Oops.</strong> {{ error }}</div>
+
+  <div class="loading" *ngIf="loading">
+    <span class="spinner"></span>
+    Loading…
+  </div>
+
+  <!-- Summary -->
+  <section class="summary" *ngIf="summary && !loading">
+    <div class="summary-card">
+      <div class="label">Total Cost Basis</div>
+      <div class="value">{{ money(summary.total_cost_basis) }}</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="label">Total Market Value</div>
+      <div class="value">{{ money(summary.total_market_value) }}</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="label">Total Unrealized P/L</div>
+      <div
+        class="value"
+        [class.pos]="toNum(summary.total_unrealized_pl) > 0"
+        [class.neg]="toNum(summary.total_unrealized_pl) < 0"
+      >
+        {{ money(summary.total_unrealized_pl) }}
+        <span class="pill" *ngIf="summary.total_unrealized_pl_percent != null">
+          {{ pct(summary.total_unrealized_pl_percent) }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Holdings Table -->
+  <section class="table-section" *ngIf="rows.length && !loading">
+    <div class="section-head">
+      <h3>Holdings</h3>
+      <p class="muted">
+        {{ rows.length }} position{{ rows.length === 1 ? "" : "s" }}
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th class="num">Qty</th>
+            <th class="num">Avg Buy</th>
+            <th class="num">Price</th>
+            <th class="num">Cost Basis</th>
+            <th class="num">Market Value</th>
+            <th class="num">Unrealized P/L</th>
+            <th class="num">P/L %</th>
+            <th class="actions">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let r of rows">
+            <td class="symbol">{{ r.symbol }}</td>
+            <td class="name">{{ r.name }}</td>
+            <td class="num">{{ r.quantity }}</td>
+
+            <td class="num">{{ money(r.avg_buy_price) }}</td>
+
+            <td class="num">
+              <span *ngIf="r.quote.price != null; else noPrice">
+                {{ money(r.quote.price) }}
+              </span>
+              <ng-template #noPrice><span class="muted">—</span></ng-template>
+              <div class="tiny muted" *ngIf="r.quote.error">
+                {{ r.quote.error }}
+              </div>
+            </td>
+
+            <td class="num">{{ money(r.cost_basis) }}</td>
+
+            <td class="num">
+              <span *ngIf="r.market_value != null; else mvDash">
+                {{ money(r.market_value) }}
+              </span>
+              <ng-template #mvDash><span class="muted">—</span></ng-template>
+            </td>
+
+            <td
+              class="num"
+              [class.pos]="toNum(r.unrealized_pl) > 0"
+              [class.neg]="toNum(r.unrealized_pl) < 0"
+            >
+              <span *ngIf="r.unrealized_pl != null; else plDash">
+                {{ money(r.unrealized_pl) }}
+              </span>
+              <ng-template #plDash><span class="muted">—</span></ng-template>
+            </td>
+
+            <td class="num muted">
+              {{
+                r.unrealized_pl_percent != null
+                  ? pct(r.unrealized_pl_percent)
+                  : "—"
+              }}
+            </td>
+
+            <td class="actions">
+              <button
+                class="btn danger"
+                (click)="reduceOrDelete(r)"
+                [disabled]="loading || deletingSymbol === r.symbol"
+              >
+                {{
+                  deletingSymbol === r.symbol ? "Working…" : "Delete / Reduce"
+                }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Empty -->
+  <div class="empty" *ngIf="!rows.length && !loading && !error">
+    <h3>No holdings yet</h3>
+    <p>Search a stock and add your first holding.</p>
+  </div>
+</div>

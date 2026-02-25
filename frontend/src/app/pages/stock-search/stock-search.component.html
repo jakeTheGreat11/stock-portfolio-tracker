@@ -1,10 +1,6 @@
 <h2>Search Stocks</h2>
 
-<input
-  type="text"
-  placeholder="Search by symbol or company"
-  [formControl]="query"
-/>
+<input type="text" placeholder="Search by company" [formControl]="query" />
 
 <div *ngIf="loading">Loading...</div>
 <div *ngIf="error">{{ error }}</div>

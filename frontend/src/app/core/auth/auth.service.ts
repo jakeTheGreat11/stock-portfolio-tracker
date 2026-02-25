@@ -24,6 +24,7 @@ export type RegisterResponse = {
 export class AuthService {
   private readonly ACCESS_KEY = 'access';
   private readonly REFRESH_KEY = 'refresh';
+  isAdmin: boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -59,6 +60,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.ACCESS_KEY);
     localStorage.removeItem(this.REFRESH_KEY);
+    this.isAdmin = false;
   }
 
   refreshAccessToken(): Observable<{ access: string }> {

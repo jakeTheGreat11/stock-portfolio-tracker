@@ -75,8 +75,9 @@ def get_quote_finnhub(symbol: str):
         quote_request.raise_for_status()
         data = quote_request.json()
     except requests.RequestException as e:
+        print("FINNHUB REQUEST FAILED")
         result = {"price": None,
-                  "error": str(e), "source": "finnhub"}
+                  "error": "Finnhub request failed", "source": "finnhub"}
         cache.set(cache_key, result, 15)
         return result
 

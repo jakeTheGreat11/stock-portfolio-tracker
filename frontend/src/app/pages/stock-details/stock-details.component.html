@@ -1,10 +1,10 @@
-<div *ngIf="loading">Loading...</div>
-<div *ngIf="error">{{ error }}</div>
+<div class="section" *ngIf="loading">Loading...</div>
+<div class="section" *ngIf="error">{{ error }}</div>
 
-<div *ngIf="!loading && stockDetails as d">
+<div class="section" *ngIf="!loading && stockDetails as d">
   <h2>{{ d.name || d.symbol }} ({{ d.symbol }})</h2>
 
-  <div *ngIf="d.logo">
+  <div class="section" *ngIf="d.logo">
     <img
       [src]="d.logo"
       alt="logo"
@@ -17,17 +17,28 @@
 
   <hr />
 
+  <p *ngIf="d.description"><strong>Description:</strong> {{ d.description }}</p>
+
+  <hr />
   <h3>Quote</h3>
-  <p><strong>Price:</strong> {{ d.quote.price ?? "-" }}</p>
+  <p><strong>Price:</strong> {{ d.price ?? "-" }}</p>
 
   <p *ngIf="d.quote_source"><strong>Source:</strong> {{ d.quote_source }}</p>
   <p *ngIf="d.quote_error" style="color: #b00020">
     <strong>Quote error:</strong> {{ d.quote_error }}
   </p>
-
+  <a
+    *ngIf="d.website"
+    class="btn"
+    style="margin-top: 14px; display: inline-flex"
+    [href]="d.website"
+    target="_blank"
+    rel="noreferrer"
+  >
+    Visit website
+  </a>
   <hr />
 
-  <!-- super simple add -->
   <label>
     Quantity:
     <input type="number" [(ngModel)]="quantity" min="1" />
@@ -35,10 +46,13 @@
 
   <button
     (click)="addHolding()"
-    [disabled]="!d.quote.price || quantity <= 0 || adding"
+    [disabled]="!d.price || quantity <= 0 || adding"
   >
     {{ adding ? "Adding..." : "Add to holdings" }}
   </button>
 
   <p *ngIf="addMessage">{{ addMessage }}</p>
+
+  <button *ngIf="addMessage" routerLink="/holdings">go to portfolio</button>
+  <button (click)="goBack()">Go Back</button>
 </div>

@@ -31,7 +31,7 @@ export interface StockDetails {
   ipo: string | null;
   marketCapitalization: number | null;
   shareOutstanding: number | null;
-  quote: StockQuote;
+  price: number | null;
   quote_error: string | null;
   quote_source: string | null;
 }
@@ -44,10 +44,12 @@ export class StocksService {
 
   searchStocks(q: string): Observable<StockSearchResponse> {
     const params = new HttpParams().set('q', q.trim());
-    return this.http.get<StockSearchResponse>('/api/stocks/search', { params });
+    return this.http.get<StockSearchResponse>('/api/stocks/search/', {
+      params,
+    });
   }
 
   getStockDetails(symbol: string): Observable<StockDetails> {
-    return this.http.get<StockDetails>(`/api/stocks/${symbol}/details`);
+    return this.http.get<StockDetails>(`/api/stocks/${symbol}/details/`);
   }
 }

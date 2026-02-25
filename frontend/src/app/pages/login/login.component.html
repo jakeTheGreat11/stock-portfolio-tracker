@@ -24,6 +24,6 @@
       {{ loading ? "Logging in..." : " Login" }}
     </button>
     <p *ngIf="error" style="color: red">{{ error }}</p>
+    <p>dont have an account, <a routerLink="/register">register here</a></p>
   </form>
-  <p>dont have an account, <a routerLink="/register">register here</a></p>
 </div>

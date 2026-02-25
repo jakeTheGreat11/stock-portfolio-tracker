@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+/* styles.scss - minimal global styles */
+
+/* 1) Basic reset */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    "Inter",
+    -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 2) Optional: a simple, neutral background (won't break component layouts) */
+body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* 3) Optional: keep headings consistent (light touch) */
+h1,
+h2,
+h3 {
+  margin: 0 0 12px;
+}

@@ -52,8 +52,11 @@ export class StockSearchComponent {
           next: (res) => {
             console.log(res.count);
             console.log(res.results);
-            this.results = res.results;
-            this.resultCount = res.count;
+            const supported = res.results.filter((item) =>
+              this.isSupportedByFmpProfile(item.symbol),
+            );
+            this.results = supported;
+            this.resultCount = supported.length;
             this.loading = false;
           },
           error: (err) => {
@@ -62,5 +65,22 @@ export class StockSearchComponent {
           },
         });
       });
+  }
+  private isSupportedByFmpProfile(symbol: string): boolean {
+    if (!symbol) return false;
+
+    // Indices like ^GSPC
+    if (symbol.startsWith('^')) return false;
+
+    // Common non-company formats (forex/crypto/vendor formats)
+    if (
+      symbol.includes('=') ||
+      symbol.includes('/') ||
+      symbol.includes(':') ||
+      symbol.includes('.')
+    )
+      return false;
+
+    return true;
   }
 }

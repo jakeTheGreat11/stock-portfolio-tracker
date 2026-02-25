@@ -1,0 +1,90 @@
+<div class="admin-container">
+  <h2 class="title">Admin Dashboard</h2>
+
+  <!-- Not Authorized -->
+  <div *ngIf="notAuthorized" class="error-card">
+    <h3>403 - Not Authorized</h3>
+    <p>You do not have permission to view this page.</p>
+  </div>
+
+  <!-- Overview Section -->
+  <div *ngIf="!notAuthorized" class="card">
+    <h3>Global Overview</h3>
+
+    <p *ngIf="overviewAnalyticsLoading">Loading overview...</p>
+    <p class="error" *ngIf="overviewAnalyticsError">
+      {{ overviewAnalyticsError }}
+    </p>
+
+    <div *ngIf="overviewAnalytics" class="grid">
+      <div class="stat">
+        <span>Total Cost Basis</span>
+        <strong>{{ money(overviewAnalytics.total_cost_basis) }}</strong>
+      </div>
+
+      <div class="stat">
+        <span>Total Shares</span>
+        <strong>{{ overviewAnalytics.total_quantity }}</strong>
+      </div>
+
+      <div class="stat">
+        <span>Total Positions</span>
+        <strong>{{ overviewAnalytics.total_positions }}</strong>
+      </div>
+
+      <div class="stat">
+        <span>Active Investors</span>
+        <strong>{{ overviewAnalytics.active_investors }}</strong>
+      </div>
+
+      <div class="stat">
+        <span>Actively Owned Stocks</span>
+        <strong>{{ overviewAnalytics.actively_owned_stocks }}</strong>
+      </div>
+
+      <div class="stat">
+        <span>Total Registered Users</span>
+        <strong>{{ overviewAnalytics.total_registered_users }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Totals Section -->
+  <div *ngIf="!notAuthorized" class="card">
+    <h3>Stock Totals Across All Users</h3>
+
+    <div class="search-row">
+      <input
+        type="text"
+        [formControl]="symbol"
+        placeholder="Enter symbol (e.g. AAPL)"
+      />
+      <button
+        (click)="fetchStockTotals()"
+        [disabled]="!symbol.value || stockAnalyticsLoading"
+      >
+        {{ stockAnalyticsLoading ? "Loading..." : "Fetch" }}
+      </button>
+    </div>
+
+    <p *ngIf="stockAnalyticsError" class="error">
+      {{ stockAnalyticsError }}
+    </p>
+
+    <div *ngIf="stockAnalyticsTotal" class="stock-results">
+      <p><strong>Symbol:</strong> {{ stockAnalyticsTotal.symbol }}</p>
+      <p>
+        <strong>Total Cost Basis:</strong>
+        {{ money(stockAnalyticsTotal.total_cost_basis) }}
+      </p>
+      <p>
+        <strong>Total Quantity:</strong>
+        {{ stockAnalyticsTotal.total_quantity }}
+      </p>
+      <p>
+        <strong>Number of Holders:</strong>
+        {{ stockAnalyticsTotal.number_of_holders }}
+      </p>
+    </div>
+  </div>
+</div>

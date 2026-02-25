@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { StockDetails, StocksService } from 'src/app/core/api/stocks.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HoldingsService } from 'src/app/core/api/holdings.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
@@ -9,7 +9,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 @Component({
   selector: 'app-stock-details',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './stock-details.component.html',
   styleUrls: ['./stock-details.component.scss'],
 })
@@ -28,6 +28,7 @@ export class StockDetailsComponent {
     private holdingsService: HoldingsService,
     private auth: AuthService,
     private router: Router,
+    private location: Location,
   ) {}
 
   ngOnInit() {
@@ -46,6 +47,7 @@ export class StockDetailsComponent {
         },
         error: (err) => {
           this.loading = false;
+          console.log(err);
           this.error = 'Failed to grab details for stock';
         },
       });
@@ -53,7 +55,7 @@ export class StockDetailsComponent {
   }
 
   addHolding() {
-    if (!this.stockDetails?.quote?.price) {
+    if (!this.stockDetails?.price) {
       this.addMessage = 'No price available right now.';
       return;
     }
@@ -65,7 +67,7 @@ export class StockDetailsComponent {
     const body = {
       symbol: this.stockDetails.symbol,
       quantity: this.quantity,
-      buy_price: this.stockDetails.quote.price,
+      buy_price: Number(this.stockDetails.price.toFixed(2)),
     };
 
     this.holdingsService.addHolding(body).subscribe({
@@ -78,5 +80,8 @@ export class StockDetailsComponent {
         this.addMessage = 'Failed to add holding.';
       },
     });
+  }
+  goBack(): void {
+    this.location.back();
   }
 }
